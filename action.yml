@@ -1,0 +1,32 @@
+name: 'Bicep Linter'
+description: 'Runs Bicep build on the files, takes any linting errors and surfaces them in GitHub'
+branding:
+  icon: 'zoom-in'  
+  color: 'yellow'
+inputs:
+  analyse-all-files:
+    description: 'Used to determine whether you just want to analyse the files changed or the whole repository.'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps: 
+    - id: code
+      run: |
+        if [ ${{ github.event_name }} == 'pull_request' ]; then
+            echo "::set-output name=current_code::${{ github.base_ref }}"
+            echo "::set-output name=changed_code::${{ github.head_ref }}"
+        else
+            echo "::set-output name=current_code::${{ github.event.before }}"
+            echo "::set-output name=changed_code::${{ github.event.after }}"
+        fi
+      shell: bash
+    - id: bicep-linter
+      run: ${{ github.action_path }}/bicep-lint.sh
+      shell: bash
+      env:
+        ANALYSE_ALL_FILES: ${{ inputs.analyse-all-files }}
+        CURRENT_CODE: ${{ steps.code.outputs.current_code }}
+        CHANGED_CODE: ${{ steps.code.outputs.changed_code }}
+        WORKSPACE: ${{ github.workspace }}/
+        ACTION_EVENT_NAME: ${{ github.event_name }}
