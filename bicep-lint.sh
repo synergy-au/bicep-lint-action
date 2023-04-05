@@ -3,6 +3,13 @@
 ## Download Azure CLI
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
+## Install Bicep CLI
+if [ "$BICEP_VERSION" != 'latest' ]; then
+    az bicep install -v "$BICEP_VERSION"
+else
+    az bicep install
+fi
+
 # Now either run the full analysis or files changed based on the settings defined
 if [ "$ANALYSE_ALL_FILES" == 'true' ]; then
     while read -r file; do

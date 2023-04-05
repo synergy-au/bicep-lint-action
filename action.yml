@@ -1,16 +1,20 @@
-name: 'Bicep Linter'
-description: 'Runs Bicep build on the files, takes any linting errors and surfaces them in GitHub'
+name: "Bicep Linter"
+description: "Runs Bicep build on the files, takes any linting errors and surfaces them in GitHub"
 branding:
-  icon: 'zoom-in'  
-  color: 'yellow'
+  icon: "zoom-in"
+  color: "yellow"
 inputs:
   analyse-all-files:
-    description: 'Used to determine whether you just want to analyse the files changed or the whole repository.'
+    description: "Used to determine whether you just want to analyse the files changed or the whole repository."
     required: false
-    default: 'false'
+    default: "false"
+  bicep-version:
+    description: "Bicep version used to build files. Specific versions can be found with 'az bicep list-versions' Defaults to latest."
+    required: false
+    default: "latest"
 runs:
   using: "composite"
-  steps: 
+  steps:
     - id: code
       run: |
         if [ ${{ github.event_name }} == 'pull_request' ]; then
@@ -30,3 +34,4 @@ runs:
         CHANGED_CODE: ${{ steps.code.outputs.changed_code }}
         WORKSPACE: ${{ github.workspace }}/
         ACTION_EVENT_NAME: ${{ github.event_name }}
+        BICEP_VERSION: ${{ inputs.bicep-version }}
