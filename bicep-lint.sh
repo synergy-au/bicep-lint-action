@@ -1,7 +1,12 @@
 # shellcheck shell=sh disable=SC3011,SC3014
 
 ## Download Azure CLI
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+if ! command -v az > /dev/null 2>&1
+then
+    echo "Azure CLI not found - installing..."
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    exit
+fi
 
 ## Install Bicep CLI
 if [ "$BICEP_VERSION" != 'latest' ]; then
