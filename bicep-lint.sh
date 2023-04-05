@@ -54,6 +54,8 @@ while read -r message; do
         echo "::notice file=$FILENAME,line=$LINE,col=$COLUMN,title=$TITLE::$MESSAGE"
     elif [ "$SEVERITY" == 'Error' ]; then
         echo "::error file=$FILENAME,line=$LINE,col=$COLUMN,title=$TITLE::$MESSAGE"
+    elif expr "$MESSAGE" : "az bicep upgrade" > /dev/null; then
+        true # do not add upgrade prompts
     else
         echo "::warning file=$FILENAME,line=$LINE,col=$COLUMN,title=$TITLE::$MESSAGE"
     fi
