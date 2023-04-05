@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=sh disable=SC3011,SC3014
 
 ## Download Azure CLI
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
