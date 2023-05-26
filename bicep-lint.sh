@@ -1,7 +1,19 @@
-# shellcheck shell=sh
+# shellcheck shell=sh disable=SC3011,SC3014
 
 ## Download Azure CLI
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+if ! command -v az > /dev/null 2>&1
+then
+    echo "Azure CLI not found - installing..."
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    exit
+fi
+
+## Install Bicep CLI
+if [ "$BICEP_VERSION" != 'latest' ]; then
+    az bicep install -v "$BICEP_VERSION"
+else
+    az bicep install
+fi
 
 # Now either run the full analysis or files changed based on the settings defined
 if [ "$ANALYSE_ALL_FILES" == 'true' ]; then
@@ -42,6 +54,8 @@ while read -r message; do
         echo "::notice file=$FILENAME,line=$LINE,col=$COLUMN,title=$TITLE::$MESSAGE"
     elif [ "$SEVERITY" == 'Error' ]; then
         echo "::error file=$FILENAME,line=$LINE,col=$COLUMN,title=$TITLE::$MESSAGE"
+    elif expr "$MESSAGE" : "az bicep upgrade" > /dev/null; then
+        true # do not add upgrade prompts
     else
         echo "::warning file=$FILENAME,line=$LINE,col=$COLUMN,title=$TITLE::$MESSAGE"
     fi
